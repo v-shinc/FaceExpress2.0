@@ -1,0 +1,87 @@
+<html>
+<head>
+    <title>iisnode logs</title>
+    <style type="text/css">
+        body
+        {
+            font-family: "Trebuchet MS" , Arial, Helvetica, sans-serif;
+        }
+        table
+        {
+            border-collapse: collapse;
+        }
+        td, th
+        {
+            border: 1px solid lightgray;
+            padding: 3px 7px 2px 7px;
+        }
+        th
+        {
+            text-align: left;
+            padding-top: 5px;
+            padding-bottom: 4px;
+            background-color: Gray;
+            color: #ffffff;
+        }
+        td.stderr
+        {
+            color: Red;
+        }
+    </style>
+</head>
+<body>
+    <table id="logFilesTable">
+        <tr>
+            <th>
+                Computer name
+            </th>
+            <th>
+                PID
+            </th>
+            <th>
+                Type
+            </th>
+            <th>
+                Created
+            </th>
+            <th>
+                Link
+            </th>
+        </tr>
+    </table>
+    <p id="lastUpdated"></p>
+    <script type="text/javascript">
+
+        // this is replaced with actual data at runtime by code in interceptor.js
+        var logFiles = [{"file":"CNG1111TC0-10228-stdout-1398672094266.txt","computername":"CNG1111TC0","pid":10228,"type":"stdout","created":1398672094266},{"file":"CNG1111TC0-11120-stdout-1399427620329.txt","computername":"CNG1111TC0","pid":11120,"type":"stdout","created":1399427620329},{"file":"CNG1111TC0-12272-stdout-1398672094706.txt","computername":"CNG1111TC0","pid":12272,"type":"stdout","created":1398672094706},{"file":"CNG1111TC0-5984-stdout-1399290332666.txt","computername":"CNG1111TC0","pid":5984,"type":"stdout","created":1399290332666},{"file":"CNG1111TC0-8116-stdout-1399463734541.txt","computername":"CNG1111TC0","pid":8116,"type":"stdout","created":1399463734541},{"file":"CNG1111TC0-8824-stdout-1398658898444.txt","computername":"CNG1111TC0","pid":8824,"type":"stdout","created":1398658898444},{"file":"CNG1111TC0-9408-stdout-1399290331894.txt","computername":"CNG1111TC0","pid":9408,"type":"stdout","created":1399290331894}];
+        var lastUpdated = 1399463734841;
+        var date = new Date();
+
+        date.setTime(lastUpdated);
+        document.getElementById('lastUpdated').innerHTML = 'Index was last updated ' + date;
+
+        logFiles.sort(function (a, b) {
+            return b.created - a.created;
+        });
+
+        var logFilesTable = document.getElementById("logFilesTable");
+        for (var i = 0; i < logFiles.length; i++) {
+            var logFile = logFiles[i];
+            date.setTime(logFile.created);
+            var row = logFilesTable.insertRow(-1);
+            var computerNameCell = row.insertCell(0);
+            var pidCell = row.insertCell(1);
+            var typeCell = row.insertCell(2);
+            var dateCell = row.insertCell(3);
+            var logCell = row.insertCell(4);
+            computerNameCell.innerHTML = logFile.computername;
+            pidCell.innerHTML = logFile.pid.toString();
+            typeCell.innerHTML = logFile.type;
+            typeCell.setAttribute('class', logFile.type);
+            dateCell.innerHTML = date.toString();
+            logCell.innerHTML = '<a href="' + logFile.file + '">log</a>';
+        };
+
+    </script>
+</body>
+</html>
