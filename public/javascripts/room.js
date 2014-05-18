@@ -182,7 +182,7 @@ var messageAgent = {
             messageAgent.send(data.socketid,{
 	            'event':'systemMessage',
 	            'data':{
-		            'msg':'<strong>'_nickname+'</strong>已成功接收'+data.filename+'.'
+		            'msg':'<strong>'+_nickname+'</strong>已成功接收'+data.filename+'.'
 	            }
             })
 	    }
