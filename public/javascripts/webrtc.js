@@ -119,80 +119,83 @@ webrtc.fire = function (eventname, _) {
         ele.apply(null, args);
     })
 }
-webrtc.connect = function (server, room,nickname) {
+webrtc.connect = function (server, room, nickname) {
     console.log(nickname);
     webrtc.signalingchannel = io.connect(server);
 
     webrtc.signalingchannel.on('message', function (msg) {
-        
-	    webrtc.fire(msg.event, msg.data);
+
+        webrtc.fire(msg.event, msg.data);
     })
     webrtc.signalingchannel.on('connected', function (msg) {
         console.log(msg.data);
-        webrtc.signalingchannel.emit('join_room', { 'room': room,'nickname':nickname });
+        webrtc.signalingchannel.emit('join_room', { 'room': room, 'nickname': nickname });
         webrtc.socket = webrtc.signalingchannel.socket.sessionid;
     });
     webrtc.on('new_comer', function (data) {
         var comer = data.socketid;
         webrtc.connections.push(comer);
         twoPC[comer] = [];
-        twoPC[comer][0]=new PCManager(comer,true,false);
-        twoPC[comer][1]=new PCManager(comer,false,false);
-        if(hasStream){
-	        twoPC[comer][0].addStream(webrtc.streams[0]);
+        twoPC[comer][0] = new PCManager(comer, true, false);
+        twoPC[comer][1] = new PCManager(comer, false, false);
+        if (hasStream) {
+            twoPC[comer][0].addStream(webrtc.streams[0]);
         }
-        htmlRender.fire('systemMessage',{
-		        'msg':data.nickname+'进入房间.'
+        htmlRender.fire('systemMessage', {
+            'msg': data.nickname + '进入房间.'
         });
-        
-        
+
+
     });
     webrtc.on('someone_leave', function (data) {
-       
+
         var idx = webrtc.connections.indexOf(data.socketid);
         webrtc.connections.splice(idx, 1);
         console.log(data.socketid + ' leave.');
         delete twoPC[data.socketid];
         delete webrtc.remoteStreams[data.socketid];
         reArrangeVideo(webrtc.remoteStreams, $('.remote-video'));
-        htmlRender.fire('systemMessage',{
-		        'msg':data.nickname+'离开房间.'
+        htmlRender.fire('systemMessage', {
+            'msg': data.nickname + '离开房间.'
         });
     });
 
 
     webrtc.on('receive_offer', function (data) {
-    	
+
         console.log('debug in receive offer');
         twoPC[data.socketid][data.NO].setRemoteDescription(new RTCSessionDescription(data.sdp));
         twoPC[data.socketid][data.NO].tryToSendAnswer()
     })
 
-    
+
     webrtc.on('receive_answer', function (data) {
         twoPC[data.socketid][data.NO].setRemoteDescription(new RTCSessionDescription(data.sdp));
         //twoPC[data.socketid][data.NO].tryToCreateDataChannel();
-        
+
     });
 
     webrtc.on('receive_ice_candidate', function (data) {
-       
+
         if (!data.candidate) return;
         twoPC[data.socketid][data.NO].addIceCandidate(new RTCIceCandidate(data.candidate));
     })
     webrtc.on('get_connections_already_in_room', function (data) {
         //console.log('debug 1 '+data.sockets);
         webrtc.connections = data.sockets || [];
-        
+
         webrtc.connections.forEach(function (socketid) {
-    		twoPC[socketid] = [];
-    		twoPC[socketid][0]=new PCManager(socketid,true,true);
-    		twoPC[socketid][1]=new PCManager(socketid,false,true);
-    	});
-    	
+            twoPC[socketid] = [];
+            twoPC[socketid][0] = new PCManager(socketid, true, true);
+            twoPC[socketid][1] = new PCManager(socketid, false, true);
+        });
+
         /*for(var i in twoPC){
-	        twoPC[i][1].tryToSendOffer();
-        }*/       
+        twoPC[i][1].tryToSendOffer();
+        }*/
+    });
+    webrtc.on('text_chat', function (data) {
+        htmlRender.fire(data.event,data.data);
     });
 }
 

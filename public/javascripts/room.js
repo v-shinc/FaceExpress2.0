@@ -31,8 +31,23 @@ var htmlRender = {};
    	
 var messageAgent = {
     groupSend: function (data) {
+        //console.log('group chat');
+        // webrtc.signalingchannel.emit('GoupTextChat',JSON.stringify({
+        //           'room':room,
+        //           'data':data
+        //     }))
         for (var i in twoPC) {
-            twoPC[i][1].dc.send(JSON.stringify(data));
+            if(!!twoPC[i][1].dc)
+            {
+                twoPC[i][1].dc.send(JSON.stringify(data));
+            }
+              
+            else{
+                webrtc.signalingchannel.emit('GoupTextChat',JSON.stringify({
+                    'room':room,
+                    'data':data
+                }))
+            }
         }
     },
     send: function (socketid, data) {
@@ -352,7 +367,7 @@ var messageAgent = {
 			triggeredbyok=true;
 			$('#myModal').modal('hide');
 			_nickname = nickname;
-			webrtc.connect('http://192.168.1.104:3000', room,_nickname);
+			webrtc.connect('http://localhost:3000', room,_nickname);
 			htmlRender.fire('systemMessage',{
 	        	'msg':nickname+', 欢迎进入 <strong>Face Express</strong>.',
 	        	
@@ -371,7 +386,7 @@ var messageAgent = {
 			triggeredbyok=true;
 			$('#myModal').modal('hide');
 			_nickname = nickname;
-			webrtc.connect('http://192.168.1.104:3000', room,_nickname);
+			webrtc.connect('http://localhost:3000', room,_nickname);
 			htmlRender.fire('systemMessage',{
 	        	'msg':nickname+', 欢迎进入 <strong>Face Express</strong>.',
 	        	
