@@ -28,38 +28,38 @@ var htmlRender = {};
    	     	h.apply(null, args);
    	    })
    	}
-   	
-var messageAgent = {
-    groupSend: function (data) {
-        //console.log('group chat');
-        // webrtc.signalingchannel.emit('GoupTextChat',JSON.stringify({
-        //           'room':room,
-        //           'data':data
-        //     }))
-        for (var i in twoPC) {
-            if(!!twoPC[i][1].dc)
-            {
-                twoPC[i][1].dc.send(JSON.stringify(data));
-            }
-              
-            else{
-                webrtc.signalingchannel.emit('GoupTextChat',JSON.stringify({
-                    'room':room,
-                    'data':data
-                }))
-            }
-        }
-    },
-    send: function (socketid, data) {
-        if (!(socketid in twoPC)) {
-            htmlRender.fire('systemMessage', { 'msg': socketid + ' 已离开.' });
-            return;
-        }
 
-        twoPC[socketid][1].dc.send(JSON.stringify(data));
-    }
+   	var messageAgent = {
+   	    groupSend: function (data) {
 
-}
+   	        for (var i in twoPC) {
+   	            if (!!twoPC[i][1].dc) {
+   	                twoPC[i][1].dc.send(JSON.stringify(data));
+   	            }else {
+   	                console.log('send message using socket');
+                    webrtc.signalingchannel.emit('single_text_chat', JSON.stringify({
+   	                    'socketid': i,
+   	                    'data': data
+   	                }));
+   	                break;
+   	                //webrtc.signalingchannel.emit('group_text_chat', JSON.stringify({
+   	                //    'room': room,
+   	                //    'data': data
+   	                //}));
+   	                //break;
+   	            }
+   	        }
+   	    },
+   	    send: function (socketid, data) {
+   	        if (!(socketid in twoPC)) {
+   	            htmlRender.fire('systemMessage', { 'msg': socketid + ' 已离开.' });
+   	            return;
+   	        }
+
+   	        twoPC[socketid][1].dc.send(JSON.stringify(data));
+   	    }
+
+   	}
 
 	
 	
@@ -367,9 +367,9 @@ var messageAgent = {
 			triggeredbyok=true;
 			$('#myModal').modal('hide');
 			_nickname = nickname;
-			webrtc.connect('http://localhost:3000', room,_nickname);
+			webrtc.connect('http://10.172.96.84:3000', room,_nickname);
 			htmlRender.fire('systemMessage',{
-	        	'msg':nickname+', 欢迎进入 <strong>Face Express</strong>.',
+	        	'msg':nickname+', 欢迎进入 <strong>Face Express</strong>.'
 	        	
 	        });
 		}
@@ -386,9 +386,9 @@ var messageAgent = {
 			triggeredbyok=true;
 			$('#myModal').modal('hide');
 			_nickname = nickname;
-			webrtc.connect('http://localhost:3000', room,_nickname);
+			webrtc.connect('http://10.172.96.84:3000', room,_nickname);
 			htmlRender.fire('systemMessage',{
-	        	'msg':nickname+', 欢迎进入 <strong>Face Express</strong>.',
+	        	'msg':nickname+', 欢迎进入 <strong>Face Express</strong>.'
 	        	
 	        });
 		}

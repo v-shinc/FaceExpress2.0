@@ -93,7 +93,7 @@ webrtc.dataChannels = {};
 webrtc.socket = null;
 webrtc.config = {
     /*the ice server and the datachannel config*/
-    rtcconfig: { iceServers: [{ url: "stun:stun.l.google.com:19302"}] },
+    rtcconfig: { iceServers: [{ url: "stun:stun.l.google.com:19302,turn:rfc5766-turn-server"}] },
     dataChannel: { optional: [{ RtpDataChannels: true}] }
 
 };
@@ -124,7 +124,7 @@ webrtc.connect = function (server, room, nickname) {
     webrtc.signalingchannel = io.connect(server);
 
     webrtc.signalingchannel.on('message', function (msg) {
-
+        console.log("debug in signaling relay message: " + JSON.stringify(msg));
         webrtc.fire(msg.event, msg.data);
     })
     webrtc.signalingchannel.on('connected', function (msg) {
@@ -177,6 +177,7 @@ webrtc.connect = function (server, room, nickname) {
 
     webrtc.on('receive_ice_candidate', function (data) {
 
+        console.log('debug in receive ice candidate: data',data.candidate)
         if (!data.candidate) return;
         twoPC[data.socketid][data.NO].addIceCandidate(new RTCIceCandidate(data.candidate));
     })
@@ -195,7 +196,8 @@ webrtc.connect = function (server, room, nickname) {
         }*/
     });
     webrtc.on('text_chat', function (data) {
-        htmlRender.fire(data.event,data.data);
+        console.log("debug in text_chat: " + data);
+        htmlRender.fire(data.event, data.data);
     });
 }
 
@@ -203,7 +205,7 @@ function createPeerConnection(pcMg) {
     pcMg.pc = new PeerConnection(webrtc.config.rtcconfig);
     
     pcMg.pc.onicecandidate = function (evt) {
-    	console.log("onicecandidate "+pcMg.socketid+" "+pcMg.NO);
+    	console.log( "debug in onicecandidate: "+evt);
         webrtc.signalingchannel.emit('send_ice_candidate', {
             'candidate': evt.candidate,
             'socketid': pcMg.socketid,            //bob

@@ -36,14 +36,22 @@ module.exports.listen = function (server) {
                 }
             });
         });
-        socket.on('GoupTextChat', function (data) {
-            console.log('group text chat'+ data)
-            socket.broadcast.to(room).emit('message',{
+        socket.on('group_text_chat', function (data) {
+            data = JSON.parse(data);
+            console.log('debug in GroupTextChat: data.room: ' + data.room + " data.data: " + data.data);
+            socket.broadcast.to(data.room).emit('message', {
                 'event': 'text_chat',
-                'data': data
+                'data': data.data
             })
         });
-        
+        socket.on('single_text_chat', function (data) {
+            data = JSON.parse(data);
+            console.log('debug in single text chat: data.socket' + data.socket+ " data.data: " + data.data);
+            io.xxconnections[data.socketid].emit('message', {
+                'event':'text_chat',
+                'data':data.data
+            })
+        });
         socket.on('send_offer', function (data) {
             console.log(data.socketid);
             if (data.socketid in io.xxconnections) {
