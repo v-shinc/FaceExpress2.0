@@ -37,12 +37,8 @@ function PCManager(socketid,forVideo,caller){
             
         });
 	}
-	this.setLocalDescription = function(sdp){
-		this.pc.setLocalDescription(sdp, function () {
-            
-        }, function () {
-            
-        });
+	this.setLocalDescription = function(sdp,successCallback,failureCallback){
+		this.pc.setLocalDescription(sdp, successCallback, failureCallback,{iceTransports:"relay"});
 	}
 	
 	this.addIceCandidate = function(candidate){
@@ -245,6 +241,7 @@ function createPeerConnection(pcMg) {
     };
 
     pcMg.pc.oniceconnectionstatechange = function (event) {
+    	console.log('signalingstate=' + event.srcElement.iceConnectionState);
         if (event.srcElement.iceConnectionState == 'disconnected') {
         	//this = null;
         	pcMg.pc = null;
@@ -358,26 +355,32 @@ function sendOffer(pcMg) {
     
 
     pcMg.pc.createOffer(function (sdp) {
-        pcMg.setLocalDescription(sdp);
+        pcMg.setLocalDescription(sdp,function(){
+	        console.log('createOffer：set local description successful callback');
+	        webrtc.signalingchannel.emit('send_offer', {
+            	'sdp': sdp,
+            	'socketid': pcMg.socketid,
+            	'NO':pcMg.NO
+            });
+        },logError);
         
-        webrtc.signalingchannel.emit('send_offer', {
-            'sdp': sdp,
-            'socketid': pcMg.socketid,
-            'NO':pcMg.NO
-        });
+        
     }, logError);
 }
 
 function sendAnswer(pcMg) {
     
     pcMg.pc.createAnswer(function (sdp) {
-        pcMg.setLocalDescription(sdp);
-        webrtc.signalingchannel.emit('send_answer', {
-            'sdp': sdp,
-            'socketid': pcMg.socketid,
-            'NO':pcMg.NO
-        });
-        pcMg.oweAnswer = false;
+        pcMg.setLocalDescription(sdp,function(){
+        	console.log('createAnswer：set local description successful callback')
+	       	webrtc.signalingchannel.emit('send_answer', {
+		       	'sdp': sdp,
+		       	'socketid': pcMg.socketid,
+		       	'NO':pcMg.NO
+		     });
+		     pcMg.oweAnswer = false;
+        },logError);
+        
     }, logError);
 }
 /*function findKeyByValue(value,dict){
