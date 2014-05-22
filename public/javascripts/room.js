@@ -367,7 +367,7 @@ var htmlRender = {};
 			triggeredbyok=true;
 			$('#myModal').modal('hide');
 			_nickname = nickname;
-			webrtc.connect('http://10.172.96.84:3000', room,_nickname);
+			webrtc.connect(getServerAddress(), room,_nickname);
 			htmlRender.fire('systemMessage',{
 	        	'msg':nickname+', 欢迎进入 <strong>Face Express</strong>.'
 	        	
@@ -386,7 +386,7 @@ var htmlRender = {};
 			triggeredbyok=true;
 			$('#myModal').modal('hide');
 			_nickname = nickname;
-			webrtc.connect('http://10.172.96.84:3000', room,_nickname);
+			webrtc.connect(getServerAddress(),room,_nickname);
 			htmlRender.fire('systemMessage',{
 	        	'msg':nickname+', 欢迎进入 <strong>Face Express</strong>.'
 	        	
@@ -397,6 +397,10 @@ var htmlRender = {};
 	$('#myModal').on('hide.bs.modal', function (e) {
 		return triggeredbyok;
   	})	
+  	function getServerAddress()
+  	{
+	  	return window.location.origin;
+  	}
     /*function Player(isMain, element) {
         this.isMain = isMain || false;
         this.stream = [];
