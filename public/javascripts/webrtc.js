@@ -272,25 +272,7 @@ function setUpDataChannel(dc){
         var data = JSON.parse(event.data);
         
         htmlRender.fire(data.event,data.data);
-        /*if(data.dataType=='text'){
-        	console.log(data.displayType+' '+JSON.stringify(data.content));
-	        htmlRender.fire(data.displayType,data.content);
-        }
-        	
-        	
-        if(data.dataType=='file'){
-            console.log(data.content);
-            var content = data.content;
-            
-	        arrayToStoreChunks.push(content.chunk);
-	        //console.log(JSON.stringify(data.chunk));
-	        if (content.last) {
-	        	console.log(content.filename);
-		        saveToDisk(arrayToStoreChunks.join(''), content.filename);
-		        arrayToStoreChunks = []; // resetting array
-		        
-		    }
-        }*/
+      
     };
     dc.onopen = function () {
         console.log('Data Channel has opened!');
