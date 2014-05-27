@@ -270,8 +270,13 @@ function setUpDataChannel(dc){
     dc.onmessage = function (event) {
         
         var data = JSON.parse(event.data);
+        if(data.space == 'fileShare'){
+	        fileShare.dispatch(data.msg);
+        }
+        else{
+	        htmlRender.fire(data.event,data.data);
+        } 
         
-        htmlRender.fire(data.event,data.data);
       
     };
     dc.onopen = function () {

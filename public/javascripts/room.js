@@ -401,6 +401,44 @@ var htmlRender = {};
   	{
 	  	return window.location.origin;
   	}
+  	
+  	
+  	/*--------------------File Share Test--------------------------*/
+  	fileShare.init(webrtc.socket,1000);
+  	var fileArea = document.getElementById('input-box');
+	fileArea.addEventListener('drop',fileShareDropHandler,false);
+	fileArea.addEventListener('dragover',dragoverHandler,false);
+	function fileShareDropHander(event){
+	
+		event.stopPropagation();
+	    event.preventDefault();
+	    
+	    var file = event.dataTransfer.files[0];
+   	 	
+   	 	
+   	 	var data = {};
+   	 	data.name = file.name;
+   	 	data.type = file.type;
+   	 	data.size = file.size;
+   	 	data.nickname= _nickname;
+   	 	data.socketid = webrtc.socket;
+   	 	data.hashCode = (file.name + Math.random()).hashCode();
+   	 	
+   	 	var reader = new window.FileReader();
+   	 	reader.readAsDataURL(file);
+   	 	reader.onload = function(event) {
+   	 		
+   	 		
+   	 		fileShare.initMeta(data.hashCode,event.target.result,webrtc.socket);
+   	 		
+	   	 	messageAgent.groupSend({
+		   	 	'event':'AskFileSharePermission',
+		   	 	'data':data
+	   	 	});
+	   	 	htmlRender.fire('uploadFile',data);
+		};
+
+	}
     /*function Player(isMain, element) {
         this.isMain = isMain || false;
         this.stream = [];
