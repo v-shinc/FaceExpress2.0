@@ -190,10 +190,11 @@ var htmlRender = {};
 	    arrayToStoreChunks[data.hashCode].push(data.chunk);
 
 	    if (data.last) {
+	        
 	        console.log(data.filename);
 	        saveToDisk(arrayToStoreChunks[data.hashCode].join(''), data.filename);
 	        //delete arrayToStoreChunks[data.hashCode]; // resetting array
-            console.log(data.socketid+'ssss');
+            
             messageAgent.send(data.socketid,{
 	            'event':'systemMessage',
 	            'data':{
@@ -272,6 +273,7 @@ var htmlRender = {};
 	        'nickname':_nickname
         });
     })
+    /*---------------------Media Control----------------------------------*/
      $('#input-box').keydown(function (event) {
         var key = event.keyCode || event.which; // differences between IE and other browsers
         if (key != 13) return;
@@ -402,6 +404,47 @@ var htmlRender = {};
 	  	return window.location.origin;
   	}
   	
+  	/*-------------------htmlRender for File Sharing---------------*/
+  	htmlRender.on('AskFileSharePermission', function (data) {
+        console.log(data);
+        var id = 'fs' + data.hashCode;
+        //data = JSON.parse(data);
+        $html = '<div class="message-others"><div class="name">'+data.nickname+':</div><div class="bubble-other">'+
+        		'<span class="'+fileType[data.type.substring(0,data.type.indexOf('/'))]+'"></span><br><small>' +
+	    	    data.name +'</br>'+
+	    		Math.ceil(data.size/1024) + 'KB</small>'+
+	    		'<span class="glyphicon glyphicon-ok-circle accept" id="' + id + '"></span>'+
+	    		'</div></div>';
+
+        $($html).appendTo('#message-box');
+        $('.nano').nanoScroller();
+        $(".nano").nanoScroller({ scroll: 'bottom' });
+        $('#input-box').val('');
+
+        var accept = document.getElementById(id);
+        accept.addEventListener('click', function () {
+        	/*fileShare.fire('setup_for_sharing',{
+	        	'hashCode':data.hashCode,
+	        	'holder':data.socketid,
+	        	'chunkCount':data.chunkCount
+        	})*/
+            messageAgent.send(data.socketid, {
+            	'space':'fileShare',
+            	'msg':{
+	            	'event': 'someone_request_file',
+	            	'data': {
+                	    'someone': webrtc.socket,
+                	    'hashCode': data.hashCode,
+                	    'filename':data.name,
+                	    'nickname':_nickname,
+                	    
+                	 }
+            	}
+                
+            })
+        });
+
+    });
   	
   	/*--------------------File Share Test--------------------------*/
   	fileShare.init(webrtc.socket,1000);
@@ -417,7 +460,7 @@ var htmlRender = {};
    	 	
    	 	
    	 	var data = {};
-   	 	data.name = file.name;
+   	 	data.filename = file.name;
    	 	data.type = file.type;
    	 	data.size = file.size;
    	 	data.nickname= _nickname;
@@ -429,8 +472,8 @@ var htmlRender = {};
    	 	reader.onload = function(event) {
    	 		
    	 		
-   	 		fileShare.initMeta(data.hashCode,event.target.result,webrtc.socket);
-   	 		
+   	 		var meta = fileShare.createMeta(data.hashCode,data.filename,event.target.result,webrtc.socket);
+   	 		data.chunkCount = meta.chunkCount;
 	   	 	messageAgent.groupSend({
 		   	 	'event':'AskFileSharePermission',
 		   	 	'data':data
@@ -439,6 +482,11 @@ var htmlRender = {};
 		};
 
 	}
+	
+	
+	
+	
+	
     /*function Player(isMain, element) {
         this.isMain = isMain || false;
         this.stream = [];

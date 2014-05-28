@@ -272,6 +272,10 @@ function setUpDataChannel(dc){
         var data = JSON.parse(event.data);
         if(data.space == 'fileShare'){
 	        fileShare.dispatch(data.msg);
+	        
+        }else if(data.space == 'htmlRender'){
+        
+	        htmlRender.fire(data.msg,event,data.msg.data);
         }
         else{
 	        htmlRender.fire(data.event,data.data);
