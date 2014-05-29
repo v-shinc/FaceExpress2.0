@@ -440,7 +440,7 @@ var htmlRender = {};
   	
   	/*--------------------File Share Test--------------------------*/
     //console.log('debug (room.js) me='+webrtc.socket);
-  	fileShare.init(1000);
+  	//fileShare.init(1000);
   	var fileShareArea = document.getElementById('input-box');
 	fileShareArea.addEventListener('drop',fileShareDropHandler,false);
 	fileShareArea.addEventListener('dragover',dragoverHandler,false);
@@ -466,7 +466,7 @@ var htmlRender = {};
    	 	reader.onload = function(event) {
    	 		
    	 		
-   	 		var meta = fileShare.createMeta(data.hashCode,data.name,event.target.result,webrtc.socket);
+   	 		var meta = fileShare.createMeta(data.hashCode,data.name,event.target.result,webrtc.socket,-1);
    	 		data.chunkCount = meta.chunkCount;
 	   	 	messageAgent.groupSend({
 		   	 	'event':'AskFileSharePermission',
