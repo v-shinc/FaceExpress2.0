@@ -393,12 +393,17 @@ function getRoomNumber(){
 	return window.location.hash.slice(1);
 }
 window.onbeforeunload = function () {
-    webrtc.singnalingchannel.emit('disconnect');
-    for(var socketid in twoPC){
-	    twoPC[socketid][0].pc.close();
-	    twoPC[socketid][1].pc.close();
-    }
-    
+
+    fileShare.leave(function () {
+        webrtc.singnalingchannel.emit('disconnect');
+        for (var socketid in twoPC) {
+            twoPC[socketid][0].pc.close();
+            twoPC[socketid][1].pc.close();
+        }
+    });
+
+
+
 }
 
 

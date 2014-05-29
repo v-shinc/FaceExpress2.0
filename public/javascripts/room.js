@@ -33,21 +33,17 @@ var htmlRender = {};
    	    groupSend: function (data) {
 
    	        for (var i in twoPC) {
-   	            if (!!twoPC[i][1].dc) {
-   	                twoPC[i][1].dc.send(JSON.stringify(data));
-   	            }else {
-   	                console.log('send message using socket');
-                    webrtc.signalingchannel.emit('single_text_chat', JSON.stringify({
-   	                    'socketid': i,
-   	                    'data': data
-   	                }));
-   	                break;
-   	                //webrtc.signalingchannel.emit('group_text_chat', JSON.stringify({
-   	                //    'room': room,
-   	                //    'data': data
-   	                //}));
-   	                //break;
-   	            }
+                twoPC[i][1].dc.send(JSON.stringify(data));
+   	            //if (!!twoPC[i][1].dc) {
+   	            //    
+   	            //}else {
+   	            //    console.log('send message using socket');
+                //    webrtc.signalingchannel.emit('single_text_chat', JSON.stringify({
+   	            //        'socketid': i,
+   	            //        'data': data
+   	            //    }));
+   	            //    break;
+   	            //}
    	        }
    	    },
    	    send: function (socketid, data) {
@@ -409,9 +405,9 @@ var htmlRender = {};
         console.log(data);
         var id = 'fs' + data.hashCode;
         //data = JSON.parse(data);
-        $html = '<div class="message-others"><div class="name">'+data.nickname+':</div><div class="bubble-other">'+
+        $html = '<div class="message-others"><div class="name">'+data.nickname+'(分享):</div><div class="bubble-other">'+
         		'<span class="'+fileType[data.type.substring(0,data.type.indexOf('/'))]+'"></span><br><small>' +
-	    	    data.name +'</br>'+
+	    	    data.filename +'</br>'+
 	    		Math.ceil(data.size/1024) + 'KB</small>'+
 	    		'<span class="glyphicon glyphicon-ok-circle accept" id="' + id + '"></span>'+
 	    		'</div></div>';
@@ -423,11 +419,7 @@ var htmlRender = {};
 
         var accept = document.getElementById(id);
         accept.addEventListener('click', function () {
-        	/*fileShare.fire('setup_for_sharing',{
-	        	'hashCode':data.hashCode,
-	        	'holder':data.socketid,
-	        	'chunkCount':data.chunkCount
-        	})*/
+        	
             messageAgent.send(data.socketid, {
             	'space':'fileShare',
             	'msg':{
@@ -435,8 +427,8 @@ var htmlRender = {};
 	            	'data': {
                 	    'someone': webrtc.socket,
                 	    'hashCode': data.hashCode,
-                	    'filename':data.name,
-                	    'nickname':_nickname,
+                	    'filename':data.filename,
+                	    'nickname':_nickname
                 	    
                 	 }
             	}
@@ -447,11 +439,12 @@ var htmlRender = {};
     });
   	
   	/*--------------------File Share Test--------------------------*/
-  	fileShare.init(webrtc.socket,1000);
-  	var fileArea = document.getElementById('input-box');
-	fileArea.addEventListener('drop',fileShareDropHandler,false);
-	fileArea.addEventListener('dragover',dragoverHandler,false);
-	function fileShareDropHander(event){
+    //console.log('debug (room.js) me='+webrtc.socket);
+  	fileShare.init(1000);
+  	var fileShareArea = document.getElementById('input-box');
+	fileShareArea.addEventListener('drop',fileShareDropHandler,false);
+	fileShareArea.addEventListener('dragover',dragoverHandler,false);
+	function fileShareDropHandler(event){
 	
 		event.stopPropagation();
 	    event.preventDefault();
@@ -461,18 +454,19 @@ var htmlRender = {};
    	 	
    	 	var data = {};
    	 	data.filename = file.name;
+   	 	data.name = file.name;
    	 	data.type = file.type;
    	 	data.size = file.size;
    	 	data.nickname= _nickname;
    	 	data.socketid = webrtc.socket;
-   	 	data.hashCode = (file.name + Math.random()).hashCode();
+   	 	data.hashCode = (file.name + Math.random() + webrtc.socket ).hashCode();
    	 	
    	 	var reader = new window.FileReader();
    	 	reader.readAsDataURL(file);
    	 	reader.onload = function(event) {
    	 		
    	 		
-   	 		var meta = fileShare.createMeta(data.hashCode,data.filename,event.target.result,webrtc.socket);
+   	 		var meta = fileShare.createMeta(data.hashCode,data.name,event.target.result,webrtc.socket);
    	 		data.chunkCount = meta.chunkCount;
 	   	 	messageAgent.groupSend({
 		   	 	'event':'AskFileSharePermission',
