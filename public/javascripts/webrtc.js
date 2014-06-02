@@ -89,7 +89,7 @@ webrtc.dataChannels = {};
 webrtc.socket = null;
 webrtc.config = {
     /*the ice server and the datachannel config*/
-    rtcconfig: { iceServers: [{ url: "stun:stun.l.google.com:19302,turn:rfc5766-turn-server"}] },
+    rtcconfig: { iceServers: [{ url: "stun:stun.l.google.com:19302"},{url:"turn:rfc5766-turn-server"}] },
     dataChannel: { optional: [{ RtpDataChannels: true}] }
 
 };
