@@ -17,7 +17,7 @@ fileShare.init = function (length) {
 
 
 }
-fileShare.chunkLength = 1000;
+fileShare.chunkLength = 50000;
 fileShare.on = function (eventname, fn) {
 
     fileShare.events[eventname] = fileShare.events[eventname] || [];
@@ -206,7 +206,7 @@ fileShare.fileShareSendChunk = function (someone, i, end, meta, hashCode, cnt) {
         i += cnt;
         setTimeout(function () {
             fileShare.fileShareSendChunk(someone, i, end, meta, hashCode, cnt);
-        }, 500);
+        }, 100);
     }
 
 }
@@ -234,7 +234,7 @@ fileShare.holderSendChunk = function (hashCode, start) {
     if (index < end)
         setTimeout(function () {
             fileShare.holderSendChunk(meta.hashCode, index);
-        }, 500);
+        }, 100);
 }
 
 /*function fileMeta(hashCode,filename,holder,sender,receiver,chunkCount)

@@ -249,6 +249,19 @@ var htmlRender = {};
         $('#input-box').val('');
     });
     
+    htmlRender.on('uploadFileToSomeone',function(data){
+    	console.log(data);
+        //data = JSON.parse(data);
+	    $html = '<div class="message-me"><div class="bubble2">'+
+	    		'<span class="'+fileType[data.type.substring(0,data.type.indexOf('/'))]+'"></span><br><small>' +
+	    	    data.name +'</br>'+
+	    		//data.type+'</br>'+
+	    		Math.ceil(data.size/1024) + 'KB</small></div></div>';
+	    $($html).appendTo('#message-box');
+        $('.nano').nanoScroller();
+        $(".nano").nanoScroller({ scroll: 'bottom' });
+        $('#input-box').val('');
+    });
     
     
     
@@ -300,7 +313,7 @@ var htmlRender = {};
             startPlayUserMedia({ "audio": true, "video": true }, function () {
                 //playButton.innerHTML = '<span class="glyphicon glyphicon-pause"></span>';
                 hasOpenedP2PChannel = true;
-
+                playButton.innerHTML = '<span class="glyphicon glyphicon-pause"></span>';
             }, function () {
                 console.log('Error occurs when play user\'s media. ');
 
@@ -399,8 +412,7 @@ var htmlRender = {};
   	{
 	  	return window.location.origin;
   	}
-  	
-  	/*-------------------htmlRender for File Sharing---------------*/
+  	  	/*-------------------htmlRender for File Sharing---------------*/
   	htmlRender.on('AskFileSharePermission', function (data) {
         console.log(data);
         var id = 'fs' + data.hashCode;
@@ -477,41 +489,88 @@ var htmlRender = {};
 
 	}
 	
-	
-	
-	
-	
-    /*function Player(isMain, element) {
-        this.isMain = isMain || false;
-        this.stream = [];
-        this.label = '';
-        this.element = element;
-        this.dbclickHandler = function (sender) {
-            this.isMain = true;
-            console.log(this.label + " was double clicked!");
-            console.log('send\'s id=' + sender.id);
-            sender.src = this.stream;
-        }
-    };
-   
-    var players = [];
-    var boxs = $('.remote-video');
-    function registerVideoManager() {
-        for (var i = 0, len = boxs.length; i < len; i++) {
+	/*------------------Switch Main Video------------------------*/
+	$('#v1').dblclick(function(){
+		var src = document.getElementById('v1').src;
+		var main = document.getElementById('main-video');
+		var v1 = document.getElementById('v1');
+		v1.src =  document.getElementById('main-video').src;
+		main.src = src;
+		if(main.src == window.location.origin + window.location.pathname)
+			main.src = '';
+		if(v1.src == window.location.origin + window.location.pathname)
+			v1.src = '';
+		var socket = video2socket[v1.id];
+		video2socket[v1.id] = video2socket[main.id];
+		video2socket[main.id] = socket;
+	})
+	$('#v2').dblclick(function(){
+		var src = document.getElementById('v2').src;
+		var main = document.getElementById('main-video');
+		var v2 = document.getElementById('v2');
+		
+		v2.src =  document.getElementById('main-video').src;
+		main.src = src;
+		if(main.src == window.location.origin + window.location.pathname)
+			main.src = '';
+		if(v2.src == window.location.origin + window.location.pathname)
+			v2.src = '';
+		var socket = video2socket[v2.id];
+		video2socket[v2.id] = video2socket[main.id];
+		video2socket[main.id] = socket;
+	})
+	$('#v3').dblclick(function(){
+		var src = document.getElementById('v3').src;
+		var main = document.getElementById('main-video');
+		var v3 = document.getElementById('v3');
+		
+		v3.src =  document.getElementById('main-video').src;
+		main.src = src;
+		if(main.src == window.location.origin + window.location.pathname)
+			main.src = '';
+		if(v3.src == window.location.origin + window.location.pathname)
+			v3.src = '';
+		var socket = video2socket[v3.id];
+		video2socket[v3.id] = video2socket[main.id];
+		video2socket[main.id] = socket;
+	})
+    /*---------------------------Send File To Someone----------------------*/
+    //var fileShareArea = document.getElementById('input-box');
+	$('video').bind('drop',sendFileToSomeone);
+	$('video').bind('dragover',dragoverHandler);
+		
+	function sendFileToSomeone(){
+		event.stopPropagation();
+	    event.preventDefault();
+	    var file = event.dataTransfer.files[0];
+	    
+   	 	var someone = video2socket[this.id];
+   	 	console.log(someone);
+   	 	if(!someone){
+	   	 	return;
+   	 	}
+   	 	var data = {};
+   	 	data.name = file.name;
+   	 	data.type = file.type;
+   	 	data.size = file.size;
+   	 	data.nickname= _nickname;
+   	 	data.socketid = webrtc.socket;
+   	 	data.hashCode = (file.name + Math.random()).hashCode();
+   	 	
+   	 	var reader = new window.FileReader();
+   	 	reader.readAsDataURL(file);
+   	 	reader.onload = function(event) {
+   	 		dataURLFile[data.hashCode] = event.target.result;
+   	 		
+   	 		
+	   	 	messageAgent.send(someone,{
+		   	 	'event':'askTransferPermission',
+		   	 	'data':data
+	   	 	});
+	   	 	htmlRender.fire('uploadFileToSomeone',data);
+		};
 
-            var b = boxs[i];
-            var p = new Player();
-            b.id = i;
-            p.label = i;
-            players.push(p);
-            console.log($(boxs[i]).attr('id'));
-            //$(b).bind('dblclick', function () {
-            //    players[this.id].dbclickHandler(this);
-            //});
-            b.addEventListener('dblclick', function () {
-                players[this.id].dbclickHandler(this);
-            });
-        }
-    }*/
-
-    //registerVideoManager()
+	}
+	
+	
+    

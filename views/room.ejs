@@ -127,10 +127,10 @@
       <div id="settings_icon" class="inactive glyphicon glyphicon-chevron-right"></div>
       <div id="settings_pannel">
         <ul>
-          <li><span>主视频</span><input type="checkbox" class="display_blocks" data-icon1="开" data-icon2="关" checked=true></li>
-          <li><span>候选视频 1</span><input type="checkbox" class="display_blocks" data-icon1="开" data-icon2="关" checked=true></li>
-          <li><span>候选视频 2</span><input type="checkbox" class="display_blocks" data-icon1="开" data-icon2="关" checked=true></li>
-          <li><span>候选视频 3</span><input type="checkbox" class="display_blocks" data-icon1="开" data-icon2="关" checked=true></li>
+          <li><span>本地视频</span><input id="local" type="checkbox" class="display_blocks" data-icon1="关" data-icon2="开" checked=false></li>
+          <li><span>候选视频 1</span><input id="remote1" type="checkbox" class="display_blocks" data-icon1="关" data-icon2="开" checked=false></li>
+          <li><span>候选视频 2</span><input id="remote2" type="checkbox" class="display_blocks" data-icon1="关" data-icon2="开" checked=false></li>
+          <li><span>候选视频 3</span><input id="remote3" type="checkbox" class="display_blocks" data-icon1="关" data-icon2="开" checked=false></li>
           <li><span>主视频音量</span><input  class="display_blocks range" type="range" min="0" max="100" value="100"></li>
           <li><span>候选视频音量 1</span><input class="display_blocks range" type="range" min="0" max="100" value="100"></li>
           <li><span>候选视频音量 2 </span><input  class="display_blocks range" type="range" min="0" max="100" value="100"></li>
@@ -190,8 +190,31 @@
 			
 		}
 	});
-	//$("[name='my-checkbox']").bootstrapSwitch();
-    
+	$('#local').click(function(){
+		if(document.getElementById('local').checked)
+			document.getElementById('localvideo').play();
+		else
+			document.getElementById('localvideo').pause();
+	})
+	$('#remote1').click(function(){
+		if(document.getElementById('remote1').checked)
+			document.getElementById('v1').play();
+		else
+			document.getElementById('v1').pause();
+	})
+	$('#remote2').click(function(){
+		if(document.getElementById('remote2').checked)
+			document.getElementById('v2').play();
+		else
+			document.getElementById('v2').pause();
+	})
+	$('#remote3').click(function(){
+		if(document.getElementById('remote3').checked)
+			document.getElementById('v3').play();
+		else
+			document.getElementById('v3').pause();
+	})
+
 </script>
 
 <style>

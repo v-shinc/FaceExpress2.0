@@ -5,22 +5,6 @@ var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || nav
 
 
 
-var context = new webkitAudioContext();
-var sineWave = context.createOscillator();
-
-// Declare gain node
-var gainNode = context.createGainNode();
-
-// Connect sine wave to gain node
-//sineWave.connect(gainNode);
-
-// Connect gain node to speakers
-gainNode.connect(context.destination);
-
-// Play sine wave
-//sineWave.noteOn(0);
-
-gainNode.gain.value = 0;
 
 function PCManager(socketid,forVideo,caller){
 	this.socketid = socketid;
@@ -323,7 +307,7 @@ function startPlayUserMedia(mediaConfig, successCallback, failureCallback) {
     });
 }
 
-
+var video2socket = {};
 
 function reArrangeVideo(streams, remoteVideosEle) {
     var idx = 0;
@@ -334,6 +318,7 @@ function reArrangeVideo(streams, remoteVideosEle) {
     for (var socketid in streams) {
         if (idx == len) return;
         remoteVideosEle[idx].src = URL.createObjectURL(streams[socketid]);
+        video2socket[remoteVideosEle[idx].id] = socketid;
         idx++;
     }
 }

@@ -92,6 +92,16 @@ body {
 	word-break: break-word;
 	padding: 5px 10px;
 }
+.bubble2{
+	color: rgba(255,255,255,0.9);
+	background: #F1C40F;
+	border-radius: 5px;
+	max-width: 220px;
+	width:auto;
+	height: auto;
+	word-break: break-word;
+	padding: 5px 10px;
+}
 .bubble-system{
 	color: rgba(0,0,0,1);
 	background: white;
